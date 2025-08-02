@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSL证书详情</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .nav-links {
+            margin-top: 20px;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin-right: 20px;
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .cert-info {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .cert-info h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            color: #333;
+            font-size: 1em;
+        }
+        
+        .domain-value {
+            font-family: 'Courier New', monospace;
+            background: #e9ecef;
+            padding: 5px 8px;
+            border-radius: 4px;
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .status-success {
+            color: #155724;
+            background: #d4edda;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .cert-section {
+            margin-bottom: 30px;
+        }
+        
+        .cert-section h3 {
+            margin-bottom: 15px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 1.3em;
+        }
+        
+        .cert-content {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 400px;
+            overflow-y: auto;
+            line-height: 1.4;
+        }
+        
+        .copy-btn {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+        
+        .copy-btn:hover {
+            background: #45a049;
+        }
+        
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 20px;
+            transition: background 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: #5a6268;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #4caf50;
+        }
+        
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border-left-color: #4caf50;
+        }
+        
+        .download-section {
+            background: #e3f2fd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-left: 4px solid #2196f3;
+        }
+        
+        .download-section h4 {
+            color: #1976d2;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+        
+        .download-btn {
+            background: #2196f3;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            transition: background 0.3s ease;
+        }
+        
+        .download-btn:hover {
+            background: #1976d2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📜 SSL证书详情</h1>
+            <p>证书ID: {{ certificate[0] }}</p>
+            <div class="nav-links">
+                <a href="/">申请证书</a>
+                <a href="/history">申请记录</a>
+            </div>
+        </div>
+        
+        <div class="content">
+            <a href="/history" class="back-btn">← 返回记录列表</a>
+            
+            <div class="alert success">
+                <strong>🎉 证书申请成功！</strong><br>
+                该证书已成功生成并可以使用。
+            </div>
+            
+            <div class="cert-info">
+                <h3>📋 证书信息</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">域名</span>
+                        <span class="info-value domain-value">{{ certificate[1] }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">申请邮箱</span>
+                        <span class="info-value">{{ certificate[2] }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Cloudflare邮箱</span>
+                        <span class="info-value">{{ certificate[3] }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">申请状态</span>
+                        <span class="info-value status-success">✅ {{ certificate[4] }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">申请时间</span>
+                        <span class="info-value">{{ certificate[8] }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="download-section">
+                <h4>💾 下载证书文件</h4>
+                <p style="margin-bottom: 15px; color: #666;">您可以下载证书和私钥文件到本地使用</p>
+                <button class="download-btn" onclick="downloadFile('{{ certificate[1] }}.key', document.getElementById('privateKey').textContent)">下载私钥文件</button>
+                <button class="download-btn" onclick="downloadFile('{{ certificate[1] }}.crt', document.getElementById('certificate').textContent)">下载证书文件</button>
+            </div>
+            
+            <div class="cert-section">
+                <h3>
+                    🔑 私钥 (Private Key)
+                    <button class="copy-btn" onclick="copyToClipboard('privateKey')">复制到剪贴板</button>
+                </h3>
+                <div class="cert-content" id="privateKey">{{ certificate[5] }}</div>
+            </div>
+            
+            <div class="cert-section">
+                <h3>
+                    📜 证书 (Certificate)
+                    <button class="copy-btn" onclick="copyToClipboard('certificate')">复制到剪贴板</button>
+                </h3>
+                <div class="cert-content" id="certificate">{{ certificate[6] }}</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            const text = element.textContent;
+            
+            navigator.clipboard.writeText(text).then(function() {
+                // 临时改变按钮文本
+                const button = element.parentElement.querySelector('.copy-btn');
+                const originalText = button.textContent;
+                button.textContent = '已复制!';
+                button.style.background = '#4caf50';
+                
+                setTimeout(function() {
+                    button.textContent = originalText;
+                    button.style.background = '#4caf50';
+                }, 2000);
+            }).catch(function(err) {
+                alert('复制失败，请手动选择文本复制');
+            });
+        }
+        
+        function downloadFile(filename, content) {
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(content));
+            element.setAttribute('download', filename);
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+    </script>
+</body>
+</html>
