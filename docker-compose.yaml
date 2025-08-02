@@ -12,6 +12,8 @@ services:
       - FLASK_ENV=production
       - FLASK_DEBUG=0
     restart: unless-stopped
+    volumes:
+      - ./ssl_certificates.db:/app/ssl_certificates.db
     networks:
       - ssl-cert-network
     healthcheck:

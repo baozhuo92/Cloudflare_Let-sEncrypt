@@ -38,7 +38,6 @@
    docker run -d \
      --name ssl-certificate-generator \
      -p 5000:5000 \
-     -v $(pwd)/data:/app/data \
      -v $(pwd)/ssl_certificates.db:/app/ssl_certificates.db \
      ssl-cert-generator
    ```
@@ -53,7 +52,6 @@
 ### 数据持久化
 
 - 数据库文件：`ssl_certificates.db`
-- 数据目录：`./data`
 
 ## 使用方法
 
