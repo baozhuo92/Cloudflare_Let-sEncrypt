@@ -16,14 +16,11 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# 创建requirements.txt文件
-COPY requirements.txt .
+# 复制应用代码
+COPY . .
 
 # 安装Python依赖
 RUN pip install --no-cache-dir -r requirements.txt
-
-# 复制应用代码
-COPY . .
 
 # 暴露端口
 EXPOSE 5000
