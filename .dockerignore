@@ -1,0 +1,79 @@
+# Python缓存文件
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+PIPFILE.lock
+
+# 虚拟环境
+.venv/
+venv/
+ENV/
+env/
+
+# IDE文件
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# 操作系统文件
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Git文件
+.git/
+.gitignore
+
+# 日志文件
+*.log
+
+# 临时文件
+*.tmp
+*.temp
+
+# Docker文件
+Dockerfile
+docker-compose.yaml
+.dockerignore
+
+# 文档文件
+README.md
+*.md
+
+# 测试文件
+test_*
+*_test.py
+tests/
+
+# 证书文件（如果不需要打包到镜像中）
+*.pem
+*.key
+*.crt
+
+# 数据库文件（运行时创建）
+*.db
+*.sqlite
+*.sqlite3

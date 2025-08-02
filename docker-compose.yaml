@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  ssl-cert-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ssl-certificate-generator
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - FLASK_DEBUG=0
+    restart: unless-stopped
+    networks:
+      - ssl-cert-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  ssl-cert-network:
+    driver: bridge
+
