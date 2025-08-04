@@ -3,220 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SSL证书申请工具</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-        
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-        
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-        
-        .header p {
-            font-size: 1.1em;
-            opacity: 0.9;
-        }
-        
-        .form-container {
-            padding: 40px;
-        }
-        
-        .form-group {
-            margin-bottom: 25px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #333;
-            font-size: 1.1em;
-        }
-        
-        .form-group input {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #e1e5e9;
-            border-radius: 8px;
-            font-size: 1em;
-            transition: border-color 0.3s ease;
-        }
-        
-        .form-group input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-        
-        .form-group small {
-            display: block;
-            margin-top: 5px;
-            color: #666;
-            font-size: 0.9em;
-        }
-        
-        .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px 30px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            width: 100%;
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-        }
-        
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-        
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 20px;
-        }
-        
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .result {
-            display: none;
-            margin-top: 30px;
-        }
-        
-        .result.success {
-            border: 2px solid #4caf50;
-            border-radius: 8px;
-            padding: 20px;
-            background: #f8fff8;
-        }
-        
-        .result.error {
-            border: 2px solid #f44336;
-            border-radius: 8px;
-            padding: 20px;
-            background: #fff8f8;
-        }
-        
-        .cert-section {
-            margin-bottom: 25px;
-        }
-        
-        .cert-section h3 {
-            margin-bottom: 10px;
-            color: #333;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        
-        .cert-content {
-            background: #f5f5f5;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 15px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9em;
-            white-space: pre-wrap;
-            word-break: break-all;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        
-        .copy-btn {
-            background: #4caf50;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9em;
-        }
-        
-        .copy-btn:hover {
-            background: #45a049;
-        }
-        
-        .alert {
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-        
-        .alert.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
-        .alert.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-    </style>
+    <title>SSL证书管理系统</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🔒 SSL证书申请工具</h1>
-            <p>使用Let's Encrypt和Cloudflare DNS验证申请免费SSL证书</p>
-            <div style="margin-top: 20px;">
-                <a href="/" style="color: white; text-decoration: none; margin-right: 20px; padding: 8px 16px; background: rgba(255,255,255,0.2); border-radius: 5px;">申请证书</a>
-                <a href="/history" style="color: white; text-decoration: none; padding: 8px 16px; background: rgba(255,255,255,0.2); border-radius: 5px;">申请记录</a>
+    <div class="main-container">
+        <div class="main-wrapper">
+            <div class="main-header">
+                <h1>🔒 SSL证书管理系统</h1>
+                <p>自动化SSL证书申请、部署和管理</p>
             </div>
-        </div>
-        
-        <div class="form-container">
+            
+            <div class="main-nav">
+                <a href="{{ url_for('main.index') }}" class="active">🏠 申请证书</a>
+                <a href="{{ url_for('main.history') }}">📋 申请记录</a>
+                <a href="{{ url_for('email.email_logs') }}">📧 邮件记录</a>
+                <div class="nav-user">
+                    <span>👤 {{ current_user.email }}</span>
+                    <a href="{{ url_for('auth.logout') }}">退出登录</a>
+                </div>
+            </div>
+            
+            <div class="main-content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert {{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
             <form id="sslForm">
                 <div class="form-group">
                     <label for="domain">域名</label>
@@ -259,38 +77,29 @@
         </div>
     </div>
     
+    <script src="{{ url_for('static', filename='js/common.js') }}"></script>
     <script>
-        document.getElementById('sslForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
+        // 自定义表单提交处理函数
+        function handleFormSubmit(formData) {
             const submitBtn = document.getElementById('submitBtn');
             const loading = document.getElementById('loading');
             const result = document.getElementById('result');
-            
-            // 获取表单数据
-            const formData = {
-                domain: document.getElementById('domain').value,
-                email: document.getElementById('email').value,
-                cloudflare_email: document.getElementById('cloudflare_email').value,
-                cloudflare_api_key: document.getElementById('cloudflare_api_key').value
-            };
             
             // 显示加载状态
             submitBtn.disabled = true;
             loading.style.display = 'block';
             result.style.display = 'none';
             
-            try {
-                const response = await fetch('/generate', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(formData)
-                });
-                
-                const data = await response.json();
-                
+            // 发送请求
+            fetch("{{ url_for('main.generate_certificate') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
                 // 隐藏加载状态
                 loading.style.display = 'none';
                 submitBtn.disabled = false;
@@ -327,11 +136,12 @@
                     result.innerHTML = `
                         <div class="alert error">
                             <strong>❌ 证书申请失败</strong><br>
-                            ${data.error}
+                            ${data.message}
                         </div>
                     `;
                 }
-            } catch (error) {
+            })
+            .catch(error => {
                 loading.style.display = 'none';
                 submitBtn.disabled = false;
                 result.style.display = 'block';
@@ -342,28 +152,29 @@
                         请检查网络连接后重试。
                     </div>
                 `;
-            }
-        });
-        
-        function copyToClipboard(elementId) {
-            const element = document.getElementById(elementId);
-            const text = element.textContent;
-            
-            navigator.clipboard.writeText(text).then(function() {
-                // 临时改变按钮文本
-                const button = element.parentElement.querySelector('.copy-btn');
-                const originalText = button.textContent;
-                button.textContent = '已复制!';
-                button.style.background = '#4caf50';
-                
-                setTimeout(function() {
-                    button.textContent = originalText;
-                    button.style.background = '#4caf50';
-                }, 2000);
-            }).catch(function(err) {
-                alert('复制失败，请手动选择文本复制');
             });
         }
+        
+        document.getElementById('sslForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // 获取表单数据
+            const formData = {
+                domain: document.getElementById('domain').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                cf_email: document.getElementById('cloudflare_email').value.trim(),
+                cf_api_key: document.getElementById('cloudflare_api_key').value.trim()
+            };
+            
+            // 检查所有字段是否已填写
+            if (!formData.domain || !formData.email || !formData.cf_email || !formData.cf_api_key) {
+                showNotification('请填写所有必需字段', 'error');
+                return;
+            }
+            
+            // 调用处理函数
+             handleFormSubmit(formData);
+        });
     </script>
 </body>
 </html>

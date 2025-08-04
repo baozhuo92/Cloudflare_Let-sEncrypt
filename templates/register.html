@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册 - SSL证书管理系统</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>📝 注册</h1>
+                <p>创建您的SSL证书管理账户</p>
+            </div>
+            
+            <div class="auth-form">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert {{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <form method="POST">
+                <div class="form-group">
+                    <label for="email">邮箱地址</label>
+                    <input type="email" id="email" name="email" required>
+                    <small>我们将向此邮箱发送验证链接</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">密码</label>
+                    <input type="password" id="password" name="password" required>
+                    <div class="password-requirements">
+                        <strong>密码要求：</strong>
+                        <ul>
+                            <li>至少6个字符</li>
+                            <li>建议包含字母和数字</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirm_password">确认密码</label>
+                    <input type="password" id="confirm_password" name="confirm_password" required>
+                    <small>请再次输入密码</small>
+                </div>
+                
+                <button type="submit" class="btn">注册</button>
+            </form>
+            
+                <div class="login-link">
+                    <p>已有账号？ <a href="{{ url_for('auth.login') }}">立即登录</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/common.js') }}"></script>
+    <script>
+        // 密码确认验证
+        document.getElementById('confirm_password').addEventListener('input', function() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = this.value;
+            
+            if (confirmPassword && password !== confirmPassword) {
+                this.style.borderColor = '#dc3545';
+            } else {
+                this.style.borderColor = '#e1e5e9';
+            }
+        });
+    </script>
+</body>
+</html>

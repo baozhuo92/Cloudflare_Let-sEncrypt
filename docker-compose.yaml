@@ -11,6 +11,15 @@ services:
     environment:
       - FLASK_ENV=production
       - FLASK_DEBUG=0
+      # 邮件服务器配置
+      - MAIL_SERVER=${MAIL_SERVER:-smtp.163.com}
+      - MAIL_PORT=${MAIL_PORT:-465}
+      - MAIL_USE_SSL=${MAIL_USE_SSL:-true}
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - MAIL_DEFAULT_SENDER=${MAIL_DEFAULT_SENDER}
+      # Flask应用密钥
+      - SECRET_KEY=${SECRET_KEY}
     restart: unless-stopped
     volumes:
       - ./ssl_certificates.db:/app/ssl_certificates.db

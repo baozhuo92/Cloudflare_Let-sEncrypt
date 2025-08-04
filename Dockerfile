@@ -26,4 +26,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 5000
 
 # 设置启动命令
-CMD ["python", "ssl_web_app.py"]
+CMD ["python", "app.py"]

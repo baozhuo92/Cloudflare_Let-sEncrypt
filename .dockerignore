@@ -47,6 +47,11 @@ Thumbs.db
 .git/
 .gitignore
 
+# 环境变量文件
+.env
+.env.local
+.env.*.local
+
 # 日志文件
 *.log
 

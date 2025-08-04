@@ -1,29 +1,160 @@
-# SSL证书申请系统 Docker部署指南
+# SSL证书管理系统
 
-这是一个基于Flask的SSL证书申请系统，支持通过Cloudflare DNS验证自动申请Let's Encrypt证书。
+这是一个基于Flask的SSL证书管理系统，支持通过Let's Encrypt自动申请SSL证书，并提供用户登录和证书记录管理功能。
 
 ## 功能特性
 
-- 🔒 自动申请Let's Encrypt SSL证书
-- 🌐 支持通配符域名证书
-- ☁️ 集成Cloudflare DNS验证
-- 📊 SQLite数据库存储申请记录
-- 🎨 现代化Web界面
-- 📋 证书申请历史记录
-- 📥 证书和私钥下载功能
+- 🔐 **邮箱登录系统**：用户通过邮箱注册和登录
+- 📧 **邮箱验证**：注册时需要验证邮箱地址
+- 🔒 **用户隔离**：每个用户只能查看自己的证书记录
+- 🎫 **SSL证书申请**：通过Let's Encrypt自动申请SSL证书
+- ☁️ **Cloudflare集成**：支持Cloudflare DNS验证
+- 📊 **证书管理**：查看证书历史记录和详情
+- 📱 **响应式设计**：支持移动端和桌面端
 
-## 快速开始
+## 安装和配置
+
+### 1. 安装依赖
+
+```bash
+pip install -r requirements.txt
+```
+
+### 2. 配置邮件服务器
+
+创建 `config.py` 文件并配置邮件服务器：
+
+```python
+# config.py
+class Config:
+    SECRET_KEY = 'your-secret-key-here'
+    
+    # 邮件服务器配置（以Gmail为例）
+    MAIL_SERVER = 'smtp.gmail.com'
+    MAIL_PORT = 587
+    MAIL_USE_TLS = True
+    MAIL_USERNAME = 'your-email@gmail.com'
+    MAIL_PASSWORD = 'your-app-password'  # Gmail应用专用密码
+    MAIL_DEFAULT_SENDER = 'your-email@gmail.com'
+```
+
+#### 邮件服务器配置说明
+
+**Gmail配置：**
+1. 开启两步验证
+2. 生成应用专用密码：https://myaccount.google.com/apppasswords
+3. 使用应用专用密码作为`MAIL_PASSWORD`
+
+**QQ邮箱配置：**
+```python
+MAIL_SERVER = 'smtp.qq.com'
+MAIL_PORT = 587
+MAIL_USE_TLS = True
+MAIL_USERNAME = 'your-email@qq.com'
+MAIL_PASSWORD = 'your-authorization-code'  # QQ邮箱授权码
+```
+
+**163邮箱配置：**
+```python
+MAIL_SERVER = 'smtp.163.com'
+MAIL_PORT = 587
+MAIL_USE_TLS = True
+MAIL_USERNAME = 'your-email@163.com'
+MAIL_PASSWORD = 'your-authorization-code'  # 163邮箱授权码
+```
+
+### 3. 环境变量配置（推荐）
+
+为了安全起见，建议使用环境变量配置敏感信息：
+
+**Windows:**
+```cmd
+set MAIL_USERNAME=your-email@gmail.com
+set MAIL_PASSWORD=your-app-password
+set SECRET_KEY=your-secret-key
+```
+
+**Linux/Mac:**
+```bash
+export MAIL_USERNAME=your-email@gmail.com
+export MAIL_PASSWORD=your-app-password
+export SECRET_KEY=your-secret-key
+```
+
+### 4. 运行应用
+
+```bash
+python ssl_web_app.py
+```
+
+应用将在 http://localhost:5000 启动。
+
+## 使用说明
+
+### 用户注册和登录
+
+1. **注册账户**：
+   - 访问 `/register` 页面
+   - 输入邮箱地址和密码
+   - 系统会发送验证邮件到您的邮箱
+   - 点击邮件中的验证链接完成注册
+
+2. **登录系统**：
+   - 访问 `/login` 页面
+   - 输入已验证的邮箱和密码
+   - 登录成功后可以申请和管理SSL证书
+
+### SSL证书申请
+
+1. **填写申请信息**：
+   - 域名：要申请证书的域名
+   - 邮箱：Let's Encrypt通知邮箱
+   - Cloudflare邮箱：Cloudflare账户邮箱
+   - Cloudflare API密钥：用于DNS验证
+
+2. **申请流程**：
+   - 系统自动创建ACME挑战
+   - 通过Cloudflare API添加DNS记录
+   - 验证域名所有权
+   - 生成并下载SSL证书
+
+### 证书管理
+
+- **查看历史记录**：访问 `/history` 查看所有申请记录
+- **证书详情**：点击记录查看证书详细信息
+- **下载证书**：在详情页面下载私钥和证书文件
+
+## 快速开始（Docker）
 
 ### 使用Docker Compose（推荐）
 
 1. **克隆或下载项目文件**
 
-2. **启动服务**
+2. **配置环境变量**
+   从示例文件创建.env文件：
+   ```bash
+   cp .env.example .env
+   ```
+   然后编辑.env文件，填入您的邮件服务器配置：
+   ```
+   # 邮件服务器配置
+   MAIL_SERVER=smtp.163.com
+   MAIL_PORT=465
+   MAIL_USE_SSL=true
+   MAIL_USERNAME=your-email@163.com
+   MAIL_PASSWORD=your-authorization-code
+   MAIL_DEFAULT_SENDER=your-email@163.com
+   
+   # Flask应用密钥
+   SECRET_KEY=your-secret-key-change-this-in-production
+   ```
+
+3. **启动服务**
    ```bash
    docker-compose up -d
    ```
 
-3. **访问应用**
+4. **访问应用**
    打开浏览器访问：http://localhost:5000
 
 ### 手动Docker构建
@@ -38,6 +169,23 @@
    docker run -d \
      --name ssl-certificate-generator \
      -p 5000:5000 \
+     -e MAIL_SERVER=smtp.163.com \
+     -e MAIL_PORT=465 \
+     -e MAIL_USE_SSL=true \
+     -e MAIL_USERNAME=your-email@163.com \
+     -e MAIL_PASSWORD=your-authorization-code \
+     -e MAIL_DEFAULT_SENDER=your-email@163.com \
+     -e SECRET_KEY=your-secret-key-change-this-in-production \
+     -v $(pwd)/ssl_certificates.db:/app/ssl_certificates.db \
+     ssl-cert-generator
+   ```
+   
+   或者使用环境变量文件：
+   ```bash
+   docker run -d \
+     --name ssl-certificate-generator \
+     -p 5000:5000 \
+     --env-file .env \
      -v $(pwd)/ssl_certificates.db:/app/ssl_certificates.db \
      ssl-cert-generator
    ```
@@ -46,8 +194,18 @@
 
 ### 环境变量
 
+**Flask应用配置：**
 - `FLASK_ENV`: Flask运行环境（development/production）
 - `FLASK_DEBUG`: 是否启用调试模式（0/1）
+- `SECRET_KEY`: Flask应用密钥（生产环境必须更改）
+
+**邮件服务器配置：**
+- `MAIL_SERVER`: SMTP服务器地址（如：smtp.163.com）
+- `MAIL_PORT`: SMTP端口号（如：465）
+- `MAIL_USE_SSL`: 是否使用SSL（true/false）
+- `MAIL_USERNAME`: 邮箱用户名
+- `MAIL_PASSWORD`: 邮箱密码或授权码
+- `MAIL_DEFAULT_SENDER`: 默认发件人邮箱
 
 ### 数据持久化
 

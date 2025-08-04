@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>邮件详情 - SSL证书管理系统</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+
+    <style>
+        .detail-container {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            transition: all 0.3s ease;
+        }
+
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .detail-title {
+            font-size: 1.5em;
+            color: rgba(30, 30, 30, 0.9);
+            font-weight: 600;
+        }
+
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 0.9em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-sent {
+            background: rgba(168, 230, 207, 0.8);
+            color: rgba(30, 100, 50, 1);
+        }
+
+        .status-failed {
+            background: rgba(255, 183, 197, 0.8);
+            color: rgba(150, 30, 50, 1);
+        }
+
+        .status-pending {
+            background: rgba(255, 235, 59, 0.8);
+            color: rgba(150, 100, 0, 1);
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .detail-item {
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+            border-left: 4px solid rgba(116, 185, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: rgba(30, 30, 30, 0.8);
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-value {
+            color: rgba(50, 50, 50, 0.9);
+            font-size: 1.1em;
+            word-break: break-all;
+        }
+
+        .content-section {
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 4px solid rgba(116, 185, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .content-title {
+            font-weight: 600;
+            color: rgba(30, 30, 30, 0.9);
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .content-preview {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            color: rgba(50, 50, 50, 0.9);
+        }
+
+        .error-section {
+            background: rgba(255, 183, 197, 0.3);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-left: 4px solid rgba(255, 154, 158, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+        .error-title {
+            color: rgba(150, 30, 50, 1);
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .error-message {
+            color: rgba(120, 30, 40, 1);
+            font-family: 'Courier New', monospace;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .email-type {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            background: rgba(168, 230, 207, 0.6);
+            color: rgba(30, 100, 50, 1);
+            display: inline-block;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="main-wrapper">
+            <div class="main-header">
+                <h1>📧 邮件详情</h1>
+                <p>查看邮件发送详细信息</p>
+            </div>
+            
+            <div class="main-nav">
+                <a href="{{ url_for('main.index') }}">申请证书</a>
+                <a href="{{ url_for('main.history') }}">申请记录</a>
+                <a href="{{ url_for('email.email_logs') }}" class="active">邮件记录</a>
+                <div class="nav-user">
+                    <span>👤 {{ current_user.email }}</span>
+                    <a href="{{ url_for('auth.logout') }}">退出登录</a>
+                </div>
+            </div>
+            
+            <div class="main-content">
+
+                <div class="detail-container">
+            <div class="detail-header">
+                <div class="detail-title">邮件 #{{ log.id }}</div>
+                <span class="status-badge status-{{ log.status }}">
+                    {% if log.status == 'sent' %}✅ 发送成功
+                    {% elif log.status == 'failed' %}❌ 发送失败
+                    {% elif log.status == 'pending' %}⏳ 待发送
+                    {% else %}{{ log.status }}{% endif %}
+                </span>
+            </div>
+
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <div class="detail-label">收件人</div>
+                    <div class="detail-value">{{ log.recipient_email }}</div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-label">邮件类型</div>
+                    <div class="detail-value">
+                        <span class="email-type">{{ log.email_type }}</span>
+                    </div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-label">发送时间</div>
+                    <div class="detail-value">{{ log.sent_at }}</div>
+                </div>
+
+                <div class="detail-item">
+                    <div class="detail-label">主题</div>
+                    <div class="detail-value">{{ log.subject }}</div>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <div class="content-title">📄 邮件内容</div>
+                <div class="content-preview">
+                    {{ log.content | safe }}
+                </div>
+            </div>
+
+            {% if log.status == 'failed' and log.error_message %}
+            <div class="error-section">
+                <div class="error-title">❌ 错误信息</div>
+                <div class="error-message">{{ log.error_message }}</div>
+            </div>
+            {% endif %}
+
+                    <a href="{{ url_for('email.email_logs') }}" class="btn">← 返回邮件记录</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/common.js') }}"></script>
+</body>
+</html>

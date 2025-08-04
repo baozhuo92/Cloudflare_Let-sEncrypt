@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>邮件发送记录 - SSL证书管理系统</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+    <style>
+        .email-type {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        .detail-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .detail-link:hover {
+            text-decoration: underline;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="main-wrapper">
+            <div class="main-header">
+                 <h1>📧 邮件发送记录</h1>
+                 <p>查看系统邮件发送历史记录</p>
+             </div>
+
+            <nav class="main-nav">
+                <a href="{{ url_for('main.index') }}">🏠 申请证书</a>
+                <a href="{{ url_for('main.history') }}">📋 申请记录</a>
+                <a href="{{ url_for('email.email_logs') }}" class="active">📧 邮件记录</a>
+                <div class="nav-user">
+                    <span>👤 {{ current_user.email }}</span>
+                    <a href="{{ url_for('auth.logout') }}">退出登录</a>
+                </div>
+            </nav>
+
+            <div class="main-content">
+            <div class="stats-grid" id="stats-container">
+                <div class="stat-card">
+                    <div class="stat-number" id="total-emails">-</div>
+                    <div class="stat-label">总邮件数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="sent-emails">-</div>
+                    <div class="stat-label">发送成功</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="failed-emails">-</div>
+                    <div class="stat-label">发送失败</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="success-rate">-</div>
+                    <div class="stat-label">成功率</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>邮件记录</h2>
+                {% if logs %}
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>收件人</th>
+                                    <th>主题</th>
+                                    <th>类型</th>
+                                    <th>状态</th>
+                                    <th>发送时间</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for log in logs %}
+                                <tr>
+                                    <td>{{ log.id }}</td>
+                                    <td>{{ log.recipient_email }}</td>
+                                    <td>{{ log.subject[:50] }}{% if log.subject|length > 50 %}...{% endif %}</td>
+                                    <td><span class="email-type">{{ log.email_type }}</span></td>
+                                    <td>
+                                        <span class="status-badge status-{{ log.status }}">
+                                            {% if log.status == 'sent' %}已发送
+                                            {% elif log.status == 'failed' %}发送失败
+                                            {% elif log.status == 'pending' %}待发送
+                                            {% else %}{{ log.status }}{% endif %}
+                                        </span>
+                                    </td>
+                                    <td>{{ log.sent_at }}</td>
+                                    <td>
+                                        <a href="{{ url_for('email.email_log_detail', log_id=log.id) }}" class="detail-link">查看详情</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="pagination">
+                        {% if has_prev %}
+                            <a href="{{ url_for('email.email_logs', page=page-1) }}" class="btn btn-sm">上一页</a>
+                        {% else %}
+                            <span class="btn btn-sm disabled">上一页</span>
+                        {% endif %}
+                        
+                        <span>第 {{ page }} 页</span>
+                        
+                        {% if has_next %}
+                            <a href="{{ url_for('email.email_logs', page=page+1) }}" class="btn btn-sm">下一页</a>
+                        {% else %}
+                            <span class="btn btn-sm disabled">下一页</span>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <h3>暂无邮件记录</h3>
+                        <p>系统还没有发送过任何邮件</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/common.js') }}"></script>
+    <script>
+        // 加载邮件统计信息
+        fetch('/api/email-stats')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('total-emails').textContent = data.total;
+                document.getElementById('sent-emails').textContent = data.sent;
+                document.getElementById('failed-emails').textContent = data.failed;
+                document.getElementById('success-rate').textContent = data.success_rate + '%';
+            })
+            .catch(error => {
+                console.error('加载统计信息失败:', error);
+            });
+    </script>
+</body>
+</html>
