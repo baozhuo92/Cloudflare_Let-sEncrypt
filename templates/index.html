@@ -76,7 +76,8 @@
             </div>
         </div>
     </div>
-    
+
+    </div>
     <script src="{{ url_for('static', filename='js/common.js') }}"></script>
     <script>
         // 自定义表单提交处理函数
@@ -118,7 +119,7 @@
                         <div class="cert-section">
                             <h3>
                                 🔑 私钥 (Private Key)
-                                <button class="copy-btn" onclick="copyToClipboard('privateKey')">复制</button>
+                                <button class="copy-btn" onclick="copyPrivateKey(this)">复制</button>
                             </h3>
                             <div class="cert-content" id="privateKey">${data.private_key}</div>
                         </div>
@@ -126,7 +127,7 @@
                         <div class="cert-section">
                             <h3>
                                 📜 证书 (Certificate)
-                                <button class="copy-btn" onclick="copyToClipboard('certificate')">复制</button>
+                                <button class="copy-btn" onclick="copyCertificate(this)">复制</button>
                             </h3>
                             <div class="cert-content" id="certificate">${data.certificate}</div>
                         </div>
@@ -173,8 +174,24 @@
             }
             
             // 调用处理函数
-             handleFormSubmit(formData);
+            handleFormSubmit(formData);
         });
+        
+        // 复制私钥函数
+        function copyPrivateKey(button) {
+            const privateKeyElement = document.getElementById('privateKey');
+            if (privateKeyElement) {
+                copyToClipboard(privateKeyElement.textContent, button);
+            }
+        }
+        
+        // 复制证书函数
+        function copyCertificate(button) {
+            const certificateElement = document.getElementById('certificate');
+            if (certificateElement) {
+                copyToClipboard(certificateElement.textContent, button);
+            }
+        }
     </script>
 </body>
 </html>
